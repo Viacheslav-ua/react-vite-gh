@@ -8,6 +8,8 @@ export const githubApi = createApi({
         baseUrl: 'https://api.github.com/'
     }),
 
+    refetchOnFocus: true,
+
     endpoints: build => ({
         searchUser: build.query<IUser[], string>({
             // query: () => 'search/users'
@@ -15,12 +17,19 @@ export const githubApi = createApi({
                 url: 'search/users',
                 params: {
                     q: search,
-                    per_page: 5,
+                    per_page: 10,
                 },
             }),
             transformResponse: (response: ServerResponse<IUser>) => response.items
+        }),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        getUserRepos: build.query<any, string>({
+            query: (username: string) => ({
+                url: `users/${username}/repos`,
+
+            })
         })
     })
 })
 
-export const { useSearchUserQuery } = githubApi
+export const { useSearchUserQuery, useLazyGetUserReposQuery } = githubApi

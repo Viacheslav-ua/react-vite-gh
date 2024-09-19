@@ -1,16 +1,25 @@
 import { useEffect, useState } from "react";
 import { useSearchUserQuery } from "../store/github/github.api";
+import { useDebounce } from "../hooks/debounce";
 
 export function HomePage() {
     const [search, setSearch] = useState('');
-    const { isError, data } = useSearchUserQuery('Viacheslav-u') ;
+    const [dropdown, setDropdown] = useState(false)
+    const debounced = useDebounce(search, 400);
+    const { isError, isLoading, data: users } = useSearchUserQuery(debounced, {
+        skip: debounced.length < 3,
+        refetchOnFocus: true,
+    });
 
     useEffect(() =>{
-        console.log(search);
-    }, [search])
+        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+        setDropdown(debounced.length > 3 && users?.length! > 0);
+    }, [debounced, users?.length])
 
     
-    
+    const clickHandler = (username: string) => {
+
+    }
 
 
     return (
@@ -29,9 +38,19 @@ export function HomePage() {
                 onChange={e => setSearch(e.target.value) }
                 />
 
-                <div className="absolute top-[44px] left-0 ring-0 min-w-[200px] shadow-md bg-white">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Incidunt rerum consequuntur, deleniti, iure officiis ipsa labore, dolorum explicabo numquam corrupti est ducimus possimus asperiores nemo at. Eum quam commodi mollitia.
-                </div>
+                {dropdown && 
+                <ul className="list-none absolute top-[44px] left-0 ring-0 min-w-[200px]
+                 shadow-md bg-white overflow-y-scroll max-h-[300px]">
+                    {isLoading && <p className="text-center font-bold">Loading ...</p>}
+                    {users?.map(user => (
+                        <li key={user.id} 
+                        onClick={() => clickHandler(user.login)}
+                        className="py-2 px-4 hover:bg-gray-500 hover:text-white
+                         transition-colors cursor-pointer"
+                        >{user.login}</li>
+                    ))}
+                </ul>
+                }
             </div>
 
             
