@@ -4,7 +4,7 @@ import { useDebounce } from "../hooks/debounce";
 import { RepoCard } from "../components/RepoCard";
 
 export function HomePage() {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState('Viacheslav-ua');
   const [dropdown, setDropdown] = useState(false)
   const debounced = useDebounce(search, 400);
   const { isError, isLoading, data: users } = useSearchUserQuery(debounced, {
